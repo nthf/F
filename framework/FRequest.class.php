@@ -16,17 +16,17 @@ class FRequest
     private $_requestUri = null;
     private $_pathInfo = null;
     
-	/**
-	 * 获得 GET 数据
-	 *
-	 * 从 $_GET 中获得指定参数，如果参数不存在则返回指定的默认值。
-	 * 
-	 * 如果 $name 参数为 null，则返回整个 $_GET 的内容。
-	 * 
-	 * @param string $name 要GET的参数名
-	 * @param mixed $defaultValue GET参数不存在时要返回的默认值
-	 * @return mixed 参数值
-	 */
+    /**
+     * 获得 GET 数据
+     *
+     * 从 $_GET 中获得指定参数，如果参数不存在则返回指定的默认值。
+     * 
+     * 如果 $name 参数为 null，则返回整个 $_GET 的内容。
+     * 
+     * @param string $name 要GET的参数名
+     * @param mixed $defaultValue GET参数不存在时要返回的默认值
+     * @return mixed 参数值
+     */
     public function getQuery($name = null, $defaultValue = null)
     {
         if (null === $name) 
@@ -303,10 +303,10 @@ class FRequest
             
             	if (!empty($_SERVER['HTTP_HOST']))
             	{
-            		if (false !== strpos($this->_requestUri, $_SERVER['HTTP_HOST']))
-            		{
+                    if (false !== strpos($this->_requestUri, $_SERVER['HTTP_HOST']))
+                    {
                         $this->_requestUri = preg_replace('/^\w+:\/\/[^\/]+/', '', $this->_requestUri);
-            		}
+                    }
             	}
             	else
             	{
