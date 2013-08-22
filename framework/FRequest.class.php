@@ -165,23 +165,23 @@ class FRequest
     {
         if (getenv('HTTP_CLIENT_IP'))
         {
-        	$ip = getenv('HTTP_CLIENT_IP');
+            $ip = getenv('HTTP_CLIENT_IP');
         }
         elseif (getenv('HTTP_X_FORWARDED_FOR'))
         {
-        	$ip = getenv('HTTP_X_FORWARDED_FOR');
+            $ip = getenv('HTTP_X_FORWARDED_FOR');
         }
         elseif (getenv('REMOTE_ADDR'))
         {
-        	$ip = getenv('REMOTE_ADDR');
+            $ip = getenv('REMOTE_ADDR');
         }
         elseif (isset($_SERVER['REMOTE_ADDR']))
         {
-        	$ip = $_SERVER['REMOTE_ADDR'];
+            $ip = $_SERVER['REMOTE_ADDR'];
         }
         else
         {
-        	$ip = 'unknown';
+            $ip = 'unknown';
         }
         
         return ($ip);
@@ -305,12 +305,12 @@ class FRequest
             	{
             		if (false !== strpos($this->_requestUri, $_SERVER['HTTP_HOST']))
             		{
-            			$this->_requestUri = preg_replace('/^\w+:\/\/[^\/]+/', '', $this->_requestUri);
+                        $this->_requestUri = preg_replace('/^\w+:\/\/[^\/]+/', '', $this->_requestUri);
             		}
             	}
             	else
             	{
-            		$this->_requestUri = preg_replace('/^(http|https):\/\/[^\/]+/i', '', $this->_requestUri);
+                    $this->_requestUri = preg_replace('/^(http|https):\/\/[^\/]+/i', '', $this->_requestUri);
             	}
             }
             // IIS 5.0 CGI
@@ -320,7 +320,7 @@ class FRequest
             
             	if (!empty($_SERVER['QUERY_STRING']))
             	{
-            		$this->_requestUri .= '?' . $_SERVER['QUERY_STRING'];
+                    $this->_requestUri .= '?' . $_SERVER['QUERY_STRING'];
             	}
             }
             // 获取不到
