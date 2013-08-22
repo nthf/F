@@ -196,39 +196,39 @@ class FRequest
     {
     	if (null === $this->_scriptUrl)
     	{
-    		$scriptName = basename($_SERVER['SCRIPT_FILENAME']);
-    		
-    		if ($scriptName === basename($_SERVER['SCRIPT_NAME']))
-    		{
-    			$this->_scriptUrl = $_SERVER['SCRIPT_NAME'];
-    		}
-    		elseif ($scriptName === basename($_SERVER['PHP_SELF']))
-    		{
-    		    $this->_scriptUrl = $_SERVER['PHP_SELF'];
-    		}
-    		elseif (isset($_SERVER['ORIG_SCRIPT_NAME']) && $scriptName === basename($_SERVER['ORIG_SCRIPT_NAME']))
-    		{
-    		    $this->_scriptUrl = $_SERVER['ORIG_SCRIPT_NAME'];
-    		}
-    		elseif (false !== ($pos = strpos($_SERVER['PHP_SELF'], '/' . $scriptName)))
-    		{
-    		    $this->_scriptUrl = substr($_SERVER['SCRIPT_NAME'], 0, $pos) . '/' . $scriptName;
-    		}
-    		elseif (isset($_SERVER['DOCUMENT_ROOT']) && 0 === strpos($_SERVER['SCRIPT_FILENAME'],$_SERVER['DOCUMENT_ROOT']))
-    		{
-    		    $this->_scriptUrl = str_replace('\\', '/', str_replace($_SERVER['DOCUMENT_ROOT'], '', $_SERVER['SCRIPT_FILENAME']));
-    		}
-    		else
-    		{
-    		    $this->_scriptUrl = '';
-    		}
+            $scriptName = basename($_SERVER['SCRIPT_FILENAME']);
+            
+            if ($scriptName === basename($_SERVER['SCRIPT_NAME']))
+            {
+                $this->_scriptUrl = $_SERVER['SCRIPT_NAME'];
+            }
+            elseif ($scriptName === basename($_SERVER['PHP_SELF']))
+            {
+                $this->_scriptUrl = $_SERVER['PHP_SELF'];
+            }
+            elseif (isset($_SERVER['ORIG_SCRIPT_NAME']) && $scriptName === basename($_SERVER['ORIG_SCRIPT_NAME']))
+            {
+                $this->_scriptUrl = $_SERVER['ORIG_SCRIPT_NAME'];
+            }
+            elseif (false !== ($pos = strpos($_SERVER['PHP_SELF'], '/' . $scriptName)))
+            {
+                $this->_scriptUrl = substr($_SERVER['SCRIPT_NAME'], 0, $pos) . '/' . $scriptName;
+            }
+            elseif (isset($_SERVER['DOCUMENT_ROOT']) && 0 === strpos($_SERVER['SCRIPT_FILENAME'],$_SERVER['DOCUMENT_ROOT']))
+            {
+                $this->_scriptUrl = str_replace('\\', '/', str_replace($_SERVER['DOCUMENT_ROOT'], '', $_SERVER['SCRIPT_FILENAME']));
+            }
+            else
+            {
+                $this->_scriptUrl = '';
+            }
     	}
     	
     	return $this->_scriptUrl;
     }
     
     /**
-     * 返回不包含任何查询参数的 URI (但包含脚本名称)
+     * 返回不包含任何查询参数的地址(但包含脚本名称)
      * 
      * @return string
      */
@@ -251,18 +251,18 @@ class FRequest
     {
     	if (null === $this->_pathInfo)
     	{
-    	    if (!empty($_SERVER['PATH_INFO']))
-    	    {
-    	        return $this->_pathInfo = $_SERVER['PATH_INFO'];
-    	    }
-    	    
-	        $requestUri = $this->getRequestUri();
-	        
-	        if (empty($requestUri))
-	        {
-	            return $this->_pathInfo = '';
-	        }
-	        
+            if (!empty($_SERVER['PATH_INFO']))
+            {
+                return $this->_pathInfo = $_SERVER['PATH_INFO'];
+            }
+            
+            $requestUri = $this->getRequestUri();
+            
+            if (empty($requestUri))
+            {
+                return $this->_pathInfo = '';
+            }
+            
             if (false !== ($pos = strpos($requestUri, '?')))
             {
                 $requestUri = substr($requestUri, 0, $pos);
@@ -292,42 +292,42 @@ class FRequest
     {
     	if (null === $this->_requestUri)
     	{
-    		// IIS
-    		if (isset($_SERVER['HTTP_X_REWRITE_URL']))
-    		{
-    			$this->_requestUri = $_SERVER['HTTP_X_REWRITE_URL'];
-    		}
-    		elseif (isset($_SERVER['REQUEST_URI']))
-    		{
-    			$this->_requestUri = $_SERVER['REQUEST_URI'];
-    
-    			if (!empty($_SERVER['HTTP_HOST']))
-    			{
-    				if (false !== strpos($this->_requestUri, $_SERVER['HTTP_HOST']))
-    				{
-    					$this->_requestUri = preg_replace('/^\w+:\/\/[^\/]+/', '', $this->_requestUri);
-    				}
-    			}
-    			else
-    			{
-    				$this->_requestUri = preg_replace('/^(http|https):\/\/[^\/]+/i', '', $this->_requestUri);
-    			}
-    		}
-    		// IIS 5.0 CGI
-    		elseif (isset($_SERVER['ORIG_PATH_INFO']))
-    		{
-    			$this->_requestUri = $_SERVER['ORIG_PATH_INFO'];
-    
-    			if (!empty($_SERVER['QUERY_STRING']))
-    			{
-    				$this->_requestUri .= '?' . $_SERVER['QUERY_STRING'];
-    			}
-    		}
-    		// 获取不到
-    		else
-    		{
-    			$this->_requestUri = '';
-    		}
+            // IIS
+            if (isset($_SERVER['HTTP_X_REWRITE_URL']))
+            {
+            	$this->_requestUri = $_SERVER['HTTP_X_REWRITE_URL'];
+            }
+            elseif (isset($_SERVER['REQUEST_URI']))
+            {
+            	$this->_requestUri = $_SERVER['REQUEST_URI'];
+            
+            	if (!empty($_SERVER['HTTP_HOST']))
+            	{
+            		if (false !== strpos($this->_requestUri, $_SERVER['HTTP_HOST']))
+            		{
+            			$this->_requestUri = preg_replace('/^\w+:\/\/[^\/]+/', '', $this->_requestUri);
+            		}
+            	}
+            	else
+            	{
+            		$this->_requestUri = preg_replace('/^(http|https):\/\/[^\/]+/i', '', $this->_requestUri);
+            	}
+            }
+            // IIS 5.0 CGI
+            elseif (isset($_SERVER['ORIG_PATH_INFO']))
+            {
+            	$this->_requestUri = $_SERVER['ORIG_PATH_INFO'];
+            
+            	if (!empty($_SERVER['QUERY_STRING']))
+            	{
+            		$this->_requestUri .= '?' . $_SERVER['QUERY_STRING'];
+            	}
+            }
+            // 获取不到
+            else
+            {
+            	$this->_requestUri = '';
+            }
     	}
     
     	return $this->_requestUri;
