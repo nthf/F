@@ -1,6 +1,6 @@
 <?php
 /**
- * 请求处理类
+ * 请求类
  * 
  * @name FRequest
  * @package framework
@@ -13,6 +13,7 @@ class FRequest
 {
     private $_baseUrl = null;
     private $_scriptUrl = null;
+    private $_currentUrl = null;
     private $_requestUri = null;
     private $_pathInfo = null;
     
@@ -24,17 +25,17 @@ class FRequest
      * 如果 $name 参数为 null，则返回整个 $_GET 的内容。
      * 
      * @param string $name 要GET的参数名
-     * @param mixed $defaultValue GET参数不存在时要返回的默认值
+     * @param mixed $default GET参数不存在时要返回的默认值
      * @return mixed 参数值
      */
-    public function getQuery($name = null, $defaultValue = null)
+    public function getQuery($name = null, $default = null)
     {
         if (null === $name) 
         {
             return $_GET;
         }
         
-        return isset($_GET[$name]) ? $_GET[$name] : $defaultValue;
+        return isset($_GET[$name]) ? $_GET[$name] : $default;
     }
     
     /**
@@ -45,17 +46,17 @@ class FRequest
      * 如果 $name 参数为 null，则返回整个 $_POST 的内容。
      *
      * @param string $name 要POST的参数名
-     * @param mixed $defaultValue POST参数不存在时要返回的默认值
+     * @param mixed $default POST参数不存在时要返回的默认值
      * @return mixed 参数值
      */
-    public function getPost($name = null, $defaultValue = null)
+    public function getPost($name = null, $default = null)
     {
         if (null === $name) 
         {
             return $_POST;
         }
         
-        return isset($_POST[$name]) ? $_POST[$name] : $defaultValue;
+        return isset($_POST[$name]) ? $_POST[$name] : $default;
     }
     
     /**
@@ -66,17 +67,17 @@ class FRequest
      * 如果 $name 参数为 null，则返回整个 $_REQUEST 的内容。
      * 
      * @param string $name 要REQUEST的参数名
-     * @param mixed $defaultValue REQUEST参数不存在时要返回的默认值
+     * @param mixed $default REQUEST参数不存在时要返回的默认值
      * @return mixed 参数值
      */
-    public function getParam($name = null, $defaultValue = null)
+    public function getParam($name = null, $default = null)
     {
         if (null === $name)
         {
             return $_REQUEST;
         }
         
-        return isset($_GET[$name]) ? $_GET[$name] : (isset($_POST[$name]) ? $_POST[$name] : $defaultValue);
+        return isset($_GET[$name]) ? $_GET[$name] : (isset($_POST[$name]) ? $_POST[$name] : $default);
     }
     
     /**
@@ -87,17 +88,38 @@ class FRequest
      * 如果 $name 参数为 null，则返回整个 $_SERVER 的内容。
      *
      * @param string $name 要查询的参数名
-     * @param mixed $defaultValue 参数不存在时要返回的默认值
+     * @param mixed $default 参数不存在时要返回的默认值
      * @return mixed 参数值
      */
-    public function getServer($name = null, $defaultValue = null)
+    public function getServer($name = null, $default = null)
     {
         if (null === $name)
         {
             return $_SERVER;
         }
         
-        return isset($_SERVER[$name]) ? $_SERVER[$name] : $defaultValue;
+        return isset($_SERVER[$name]) ? $_SERVER[$name] : $default;
+    }
+    
+    /**
+     * 获取 ENV 数据
+     * 
+     * 从 $_ENV 中获得指定参数，如果参数不存在则返回指定的默认值。
+     *
+     * 如果 $name 参数为 null，则返回整个 $_SERVER 的内容。
+     *
+     * @param string $name 要查询的参数名
+     * @param mixed $default 参数不存在时要返回的默认值
+     * @return mixed 参数值
+     */
+    public function getEnv($name = null, $default = null)
+    {
+        if (null === $name)
+        {
+            return $_ENV;
+        }
+        
+        return isset($_ENV[$name]) ? $_ENV[$name] : $default;
     }
     
     /**
@@ -108,18 +130,18 @@ class FRequest
      * 如果 $name 参数为 null，则返回整个 $_COOKIE 的内容。
      * 
      * @param string $name 要查询的参数名
-     * @param mixed $defaultValue 参数不存在时要返回的默认值
+     * @param mixed $default 参数不存在时要返回的默认值
      * @return mixed 参数值
      * @since 0.2
      */
-    public function getCookie($name = null, $defaultValue = null)
+    public function getCookie($name = null, $default = null)
     {
         if (null === $name)
         {
             return $_COOKIE;
         }
         
-        return isset($_COOKIE[$name]) ? $_COOKIE[$name] : $defaultValue;
+        return isset($_COOKIE[$name]) ? $_COOKIE[$name] : $default;
     }
     
     /**
@@ -130,18 +152,20 @@ class FRequest
      * 如果 $name 参数为 null，则返回整个 $_SESSION 的内容。
      * 
      * @param string $name 要查询的参数名
-     * @param mixed $defaultValue 参数不存在时要返回的默认值
+     * @param mixed $default 参数不存在时要返回的默认值
      * @return mixed 参数值
      * @since 0.2
      */
-    public function getSession($name = null, $defaultValue = null)
+    public function getSession($name = null, $default = null)
     {
+        isset($_SESSION) || session_start();
+        
         if (null === $name)
         {
             return $_SESSION;
         }
         
-        return isset($_SESSION[$name]) ? $_SESSION[$name] : $defaultValue;
+        return isset($_SESSION[$name]) ? $_SESSION[$name] : $default;
     }
     
     /**
@@ -334,6 +358,36 @@ class FRequest
     }
     
     /**
+     * 获取当前的浏览器地址
+     * 
+     * @return string
+     */
+    public function getCurrentUrl()
+    {
+        if (null === $this->_currentUrl)
+        {
+            $url = 'http';
+            
+            if ('on' == $_SERVER['HTTPS']) 
+            {
+                $url .= 's';
+            }
+            
+            $url .= '://' . $_SERVER['SERVER_NAME'];
+            
+            $port = $_SERVER['SERVER_PORT'];
+            if (80 != $port)
+            {
+                $url .= ":{$port}";
+            }
+            
+            $this->_currentUrl = $url . $_SERVER['REQUEST_URI'];
+        }
+        
+        return $this->_currentUrl;
+    }
+    
+    /**
      * 判断是否是 GET 请求
      * 
      * @return boolean
@@ -371,6 +425,16 @@ class FRequest
     public function isFlash()
     {
         return isset($_SERVER['HTTP_USER_AGENT']) && (stripos($_SERVER['HTTP_USER_AGENT'], 'Shockwave') !== false || stripos($_SERVER['HTTP_USER_AGENT'], 'Flash') !== false);
+    }
+    
+    /**
+     * 判断是否是 HTTPS 安全请求
+     * 
+     * @return boolean
+     */
+    public function isSecure()
+    {
+        return isset($_SERVER['HTTPS']) && strcasecmp($_SERVER['HTTPS'], 'on') === 0;
     }
     
 }
