@@ -3,7 +3,7 @@
  * 助手类
  * 
  * @name 
- * @package 
+ * @package Framework
  * @copyright @2012
  * @version 0.2 (2013-9-5 4:34:34)
  * @author <feiker.hong@gmail.com>

@@ -3,7 +3,7 @@
  * 请求类
  * 
  * @name FRequest
- * @package framework
+ * @package Framework
  * @copyright @2012
  * @version 0.2 (2013-8-22 2:10:43)
  * @author <feiker.hong@gmail.com>
