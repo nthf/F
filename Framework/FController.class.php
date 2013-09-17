@@ -55,24 +55,9 @@ abstract class FController
     	$this->_request = new FRequest();
     	$this->_response = new FResponse();
     }
-	
-    /**
-     * 渲染模板
-     * 
-     * @param string $tpl  模板名称
-     * @param boolean $partial  是否是局部的
-     */
-    protected function render($tpl = null, $partial = false)
-    {
-    	if (null === $tpl) {
-    		$tpl = $this->getDefaultTemplate();
-    	}
-    	
-    	$this->view->render($tpl, $partial);
-    }
     
     /**
-     * 获取默认的模板
+     * 获取默认的模板路径
      * 
      * @return string
      */
@@ -81,6 +66,7 @@ abstract class FController
     	$core = F::getInstance();
     	$config = $core::getConfig();
     	$dispatch = $core->getDispatch();
+    	
     	$script = isset($config['_viewPath']) ? $config['_viewPath'] : $this->_viewPath;
     	
     	$tpl = $script . DS
@@ -90,6 +76,53 @@ abstract class FController
     	     . $this->_viewExt;
     	
     	return $tpl;
+    }
+    
+    /**
+     * 获取格式化后完整的模板路径
+     * 
+     * @param string $tpl
+     * @return string
+     */
+    protected function getFormattedTemplate($tpl)
+    {
+    	if ($tpl[0] === '\\') {
+    		$tpl = ltrim($tpl, '\\');
+    	} else {
+    		$core = F::getInstance();
+    		$config = $core::getConfig();
+    		$dispatch = $core->getDispatch();
+    		
+    		$script = isset($config['_viewPath']) ? $config['_viewPath'] : $this->_viewPath;
+    		
+    		$tpl = trim($tpl, '/');
+    		$tmp = explode('/', $tpl);
+			switch (count($tmp)) {
+				case 2: $tpl = $script . DS . $tpl; break;
+				case 1: $tpl = $script . DS . $dispatch['namespace'] . DS . $tpl; break;
+				case 0: $tpl = $script . DS . $dispatch['namespace'] . DS . $dispatch['controller'] . DS . $tpl; break;
+			}
+    	}
+    	
+    	return $tpl;
+    }
+    
+    /**
+     * 渲染模板
+     *
+     * @param string $tpl  模板名或模板路径
+     * @param boolean $partial  是否是局部的
+     * @return string
+     */
+    protected function render($tpl = null, $partial = false)
+    {
+    	if (!$tpl) {
+    		$tpl = $this->getDefaultTemplate();
+    	} else {
+    		$tpl = $this->getFormattedTemplate($tpl);
+    	}
+    	 
+    	$this->view->render($tpl, $partial);
     }
     
     /**

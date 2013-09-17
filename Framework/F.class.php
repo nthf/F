@@ -111,7 +111,7 @@ class F
             	$class = new $className();
             	$func = array($class, $action);
             	if (is_callable($func, true)) {
-            		call_user_func($func);
+            		call_user_func_array($func, self::$_reg['_params']);
             		exit();
             	}
             }

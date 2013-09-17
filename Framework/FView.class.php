@@ -11,6 +11,14 @@
 class FView
 {
 
+    public function render($tpl, $partial = false)
+    {
+    	
+    }
     
+    public function widget()
+    {
+    	
+    }
     
 }
