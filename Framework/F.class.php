@@ -8,6 +8,7 @@
  * @version 0.2 (2013-9-5 5:40:22)
  * @author <feiker.hong@gmail.com>
  */
+defined('DS') || define('DS', DIRECTORY_SEPARATOR);
 defined('F_DIR') || define('F_DIR', dirname(__FILE__));
 
 class F
@@ -56,49 +57,65 @@ class F
      */
     public function run()
     {
-        $this->dispatch();
-        $this->process();
+        $dispatch = $this->getDispatch();
+        
+		$this->process($dispatch);
+        
+        $this->_onNotFound();
     }
     
     /**
-     * 分派
+     * 设置分派信息
+     * 
+     * @param array $dispatch
+     * @param array $params
      */
-    public function dispatch()
+    public function setDispatch($dispatch, $params = array())
     {
-        $pathInfo = $this->getPathInfo();
-        $router = FRouter::getInstance();
-        
-        if (isset(self::$_config['routes'])) 
-        {
-            $router->add(self::$_config['routes']);
-        }
-        
-        $this->_dispatch = $router->match($pathInfo);
+    	$this->_dispatch = $dispatch;
+    	
+    	self::reg('_params', $params);
+    }
+    
+    /**
+     * 获取分派信息
+     * 
+     * @return array
+     */
+    public function getDispatch()
+    {
+    	if (null === $this->_dispatch) {
+    		$pathInfo = $this->getPathInfo();
+    		
+    		$router = FRouter::getInstance();
+    		if (isset(self::$_config['routes'])) {
+    			$router->add(self::$_config['routes']);
+    		}
+    		
+    		$this->_dispatch = $router->match($pathInfo);
+    	}
+    	
+    	return $this->_dispatch;
     }
     
     /**
      * 处理请求
      */
-    protected function process()
+    protected function process($dispatch)
     {
-        extract($this->_dispatch);
+        list($namespace, $controller, $action) = $dispatch;
         
-        if (isset($namespace, $controller, $action))
-        {
+        if (isset($namespace, $controller, $action)) {
             $className = "Controller_{$namespace}_{$controller}";
-            if (self::import($className))
-            {
+            if (self::import($className)) {
             	$class = new $className();
             	$func = array($class, $action);
-            	if (is_callable($func, true))
-            	{
+            	if (is_callable($func, true)) {
             		call_user_func($func);
             		exit();
             	}
             }
         }
-        
-        $this->_onNotFound();
     }
     
     /**
@@ -108,8 +125,7 @@ class F
      */
     public function getPathInfo()
     {
-        if (null === $this->_pathInfo)
-        {
+        if (null === $this->_pathInfo) {
             $this->_pathInfo = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '';
         }
         
@@ -121,15 +137,13 @@ class F
      */
     protected function _onNotFound()
     {
-        $this->_dispatch = array(
+        $dispatch = array(
             'namespace' => 'Default',
             'controller' => 'Error',
             'action' => 'indexAction',
         );
         
-        $this->process();
-        
-        exit();
+        $this->process($dispatch);
     }
     
     /**
@@ -139,8 +153,7 @@ class F
      */
     public static function getInstance()
     {
-    	if (null === self::$_instance)
-    	{
+    	if (null === self::$_instance) {
     		self::$_instance = new self();
     	}
     
@@ -167,13 +180,11 @@ class F
      */
     public static function reg($name = null, $value = null, $default = null)
     {
-        if (null === $name) 
-        {
+        if (null === $name) {
             return self::$_reg;
         }
 
-        if (null === $value) 
-        {
+        if (null === $value) {
             return isset(self::$_reg[$name]) ? self::$_reg[$name] : $default;
         }
 
@@ -191,14 +202,12 @@ class F
     public static function import($className, $dir = '', $suffix = '.php')
     {
         // 若类或接口已定义, 则直接返回加载成功:true
-        if (class_exists($className, false) || interface_exists($className, false)) 
-        {
+        if (class_exists($className, false) || interface_exists($className, false)) {
         	return true;
         }
         
         // 若是加载框架类, 则直接加载并返回加载成功:true
-        if (isset(self::$_config['_class'][$className])) 
-        {
+        if (isset(self::$_config['_class'][$className])) {
         	include self::$_config['_class'][$className];
         	return true;
         }
@@ -207,8 +216,7 @@ class F
         $classFile = $dir . str_replace('_', DIRECTORY_SEPARATOR, $className) . $suffix;
         
         // 若是加载指定命名规则的类, 则先检查文件是否存在并返回加载成功:true
-        if (file_exists($classFile)) 
-        {
+        if (file_exists($classFile)) {
         	include $classFile;
         	return true;
         }
