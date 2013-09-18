@@ -3,7 +3,7 @@
  * 加密解密类
  */
 
-class Util_Encrypt
+class Util_Common_Encrypt
 {
     protected $_config = array(
         'hash'      => 'sha1',

@@ -3,7 +3,7 @@
  *
  */
 
-class Cola_Com_Validate
+class Util_Common_Validate
 {
     protected $_error = array();
 

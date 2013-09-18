@@ -28,12 +28,14 @@ class F
     protected function __construct()
     {
         self::$_config['_class'] = array(
+			'FController' => F_DIR . '/FController.class.php',
+			'FException' => F_DIR . '/FException.class.php',
+			'FFactory' => F_DIR . '/FFactory.class.php',
             'FLoader' => F_DIR . '/FLoader.class.php',
-            'FRouter' => F_DIR . '/FRouter.class.php',
-            'FFactory' => F_DIR . '/FFactory.class.php',
-            'FRequest' => F_DIR . '/FRequest.class.php',
-            'FResponse' => F_DIR . '/FResponse.class.php',
-            'FException' => F_DIR . '/FException.class.php',
+			'FRequest' => F_DIR . '/FRequest.class.php',
+			'FResponse' => F_DIR . '/FResponse.class.php',
+			'FRouter' => F_DIR . '/FRouter.class.php',
+			'FView' => F_DIR . '/FView.class.php',
         );
         
         self::registerAutoload();
@@ -103,7 +105,7 @@ class F
      */
     protected function process($dispatch)
     {
-        list($namespace, $controller, $action) = $dispatch;
+        extract($dispatch);
         
         if (isset($namespace, $controller, $action)) {
             $className = "Controller_{$namespace}_{$controller}";
@@ -116,6 +118,17 @@ class F
             	}
             }
         }
+    }
+    
+    /**
+     * 设置访问的路径信息
+     * 
+     * @param string $pathInfo
+     * @return void
+     */
+    public function setPathInfo($pathInfo)
+    {
+    	$this->_pathInfo = $pathInfo;
     }
     
     /**
@@ -212,8 +225,8 @@ class F
         	return true;
         }
         
-        $dir = empty($dir) ? '' : rtrim($dir, '\\/') . DIRECTORY_SEPARATOR;
-        $classFile = $dir . str_replace('_', DIRECTORY_SEPARATOR, $className) . $suffix;
+        $dir = empty($dir) ? '' : rtrim($dir, '\\/') . DS;
+        $classFile = $dir . str_replace('_', DS, $className) . $suffix;
         
         // 若是加载指定命名规则的类, 则先检查文件是否存在并返回加载成功:true
         if (file_exists($classFile)) {

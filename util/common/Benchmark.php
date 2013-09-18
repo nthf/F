@@ -2,7 +2,7 @@
 /**
  * 测试执行类
  */
-class Util_Benchmark
+class Util_Common_Benchmark
 {
     protected $_time = array();
 

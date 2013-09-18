@@ -114,15 +114,20 @@ abstract class FController
      * @param boolean $partial  是否是局部的
      * @return string
      */
-    protected function render($tpl = null, $partial = false)
+    public function render($tpl = null, $return = false)
     {
     	if (!$tpl) {
     		$tpl = $this->getDefaultTemplate();
     	} else {
     		$tpl = $this->getFormattedTemplate($tpl);
     	}
-    	 
-    	$this->view->render($tpl, $partial);
+    	
+    	$output = $this->view->render($tpl);
+    	if ($return) {
+    		return $output;
+    	} else {
+    		echo $output;
+    	}
     }
     
     /**
@@ -159,6 +164,37 @@ abstract class FController
     	}
     	
     	$core->setDispatch($dispatch, $params);
+    }
+    
+    /**
+     * 动态的设置变量
+     *
+     * @param string $key
+     * @param mixed $value
+     */
+    public function __set($key, $value)
+    {
+    	$this->$key = $value;
+    }
+    
+    /**
+     * 动态的获取变量
+     *
+     * @param string $key
+     * @return mixed
+     */
+    public function __get($key)
+    {
+    	switch ($key) {
+    		case 'view':
+    			return $this->view = new FView();
+    		case '_request':
+    			return $this->_request = new FRequest();
+    		case '_response':
+    			return $this->_response = new FResponse();
+    		default:
+    			return null;
+    	}
     }
     
 }

@@ -2,7 +2,7 @@
 /**
  * 验证码类
  */
-class Util_Captcha
+class Util_Common_Captcha
 {
     /**
      * Error define
